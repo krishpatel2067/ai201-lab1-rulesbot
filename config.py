@@ -19,3 +19,16 @@ N_RESULTS = 3
 
 # --- Documents ---
 DOCS_PATH = "./docs"
+
+# --- GAMES ---
+
+GAMES = [
+    "Catan",
+    "Clue",
+    "Codenames",
+    "Monopoly",
+    "Pandemic",
+    "Risk",
+    "Ticket To Ride",
+    "Uno",
+]

@@ -1,6 +1,8 @@
+import re
+
 import chromadb
 from chromadb.utils import embedding_functions
-from config import CHROMA_COLLECTION, CHROMA_PATH, EMBEDDING_MODEL, N_RESULTS
+from config import CHROMA_COLLECTION, CHROMA_PATH, EMBEDDING_MODEL, N_RESULTS, GAMES
 
 # Embedding function and ChromaDB client are initialized once at module load.
 # sentence-transformers downloads the model on first use — this may take
@@ -19,6 +21,31 @@ _collection = _client.get_or_create_collection(
 def get_collection():
     """Return the ChromaDB collection. Used by app.py during ingestion."""
     return _collection
+
+
+def _detect_game(query):
+    """Return the single game from GAMES named in the query, else None.
+
+    Matching is case-insensitive and tolerant of how much whitespace sits
+    between the words of a multi-word name. If the query names *more than one*
+    game, we return None and fall back to unscoped search — guessing one over
+    the other would scope to the wrong game, which is worse than not scoping.
+
+    Note: short game names that are also common English words (Risk, Clue,
+    Pandemic, Monopoly) will sometimes match incidentally — e.g. "is there any
+    risk of running out of cards?" matches "Risk". Word boundaries prevent
+    substring matches ("brisk" won't match "Risk"), but not these true-word
+    collisions. That's an accepted tradeoff of keyword detection.
+    """
+    matched = []
+    for game in GAMES:
+        # Build a pattern from the game's words:
+        #   "Ticket To Ride" -> r"\bTicket\s+To\s+Ride\b"
+        pattern = r"\b" + r"\s+".join(re.escape(word) for word in game.split()) + r"\b"
+        if re.search(pattern, query, re.IGNORECASE):
+            matched.append(game)
+    # each game appears at most once
+    return matched[0] if len(matched) == 1 else None
 
 
 def embed_and_store(chunks):
@@ -46,11 +73,11 @@ def embed_and_store(chunks):
     print(f"Stored {_collection.count()} total chunks in the vector database.")
 
 
-def retrieve(query, n_results=N_RESULTS):
+def retrieve(query, n_results=N_RESULTS, threshold=0.6):  # ☑️
     """
     Find the most relevant rule chunks for a user's question.
 
-    TODO — Milestone 2:
+    Milestone 2:
 
     Use _collection.query() to run a semantic search. It takes:
       - query_texts : a list containing your query string
@@ -68,5 +95,30 @@ def retrieve(query, n_results=N_RESULTS):
     if _collection.count() == 0:
         return []
 
-    # Your implementation here.
-    return []
+    # If the query unambiguously names a game, scope retrieval to that game's
+    # chunks so rules from other games can't bleed into the answer.
+    query_game = _detect_game(query)
+
+    result = _collection.query(
+        query_texts=[query],
+        n_results=n_results,
+        include=["documents", "metadatas", "distances"],
+        where={"game": query_game} if query_game else None,
+    )
+    retrieved = []
+
+    for i in range(len(result["ids"][0])):
+        text = result["documents"][0][i]
+        game = result["metadatas"][0][i]["game"]
+        dist = result["distances"][0][i]
+
+        # drop irrelevant answers beyond a certain threshold
+        if dist <= threshold:
+            retrieved.append({"text": text, "game": game, "distance": dist})
+
+    for chunk in retrieved:
+        print(
+            f"[{chunk['game']}] (dist: {chunk['distance']:.3f}) {chunk['text'][:80]}..."
+        )
+
+    return retrieved
