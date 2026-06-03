@@ -15,19 +15,19 @@ Given a user's natural language query, find the most relevant chunks from the ve
 
 **Inputs:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `query` | `str` | The user's natural language question |
+| Parameter   | Type  | Description                                                                |
+| ----------- | ----- | -------------------------------------------------------------------------- |
+| `query`     | `str` | The user's natural language question                                       |
 | `n_results` | `int` | Maximum number of chunks to return (default: `N_RESULTS` from `config.py`) |
 
 **Output:** `list[dict]`
 
 Each dict in the returned list must contain exactly these keys:
 
-| Key | Type | Description |
-|-----|------|-------------|
-| `"text"` | `str` | The chunk text |
-| `"game"` | `str` | The game name this chunk came from |
+| Key          | Type    | Description                                                   |
+| ------------ | ------- | ------------------------------------------------------------- |
+| `"text"`     | `str`   | The chunk text                                                |
+| `"game"`     | `str`   | The game name this chunk came from                            |
 | `"distance"` | `float` | Cosine distance score — lower means more similar to the query |
 
 Results should be ordered from most to least relevant (lowest to highest distance). Returns an empty list `[]` if the collection contains no documents.
@@ -36,53 +36,100 @@ Results should be ordered from most to least relevant (lowest to highest distanc
 
 ## Design Decisions
 
-*Complete the fields below before writing any code. Use your AI tool in Plan or Ask mode to help you reason through what belongs here — but the decisions are yours.*
+_Complete the fields below before writing any code. Use your AI tool in Plan or Ask mode to help you reason through what belongs here — but the decisions are yours._
 
 ---
 
-### Query approach
+### Query approach ☑️
 
-*Describe how you will use `_collection.query()` to find relevant chunks. What arguments will you pass, and why?*
+_Describe how you will use `_collection.query()` to find relevant chunks. What arguments will you pass, and why?_
 
 ```
-[your answer here]
+_collection.query() needs the actual query, the number of results to return, and the fields to include in the return value:
+
+_collection.query(
+    query_texts=["query1"],
+    n_results=N_RESULTS,
+    include=["documents", "metadatas", "distances"]
+)
+
+A concrete example of query()'s return value:
+
+ {
+    "ids": [
+        ["uno_007", "uno_012", "catan_003"]
+    ],
+    "documents": [
+        [
+            "Each player is dealt seven cards to start the game.",
+            "On your turn, if you cannot play a card, draw one from the deck.",
+            "Players collect resource cards based on the dice roll each turn."
+        ]
+    ],
+    "metadatas": [
+        [
+            {"game": "Uno"},
+            {"game": "Uno"},
+            {"game": "Catan"}
+        ]
+    ],
+    "distances": [
+        [0.1834, 0.4021, 0.7765]
+    ],
+    "embeddings": None,
+    "uris": None,
+    "data": None,
+    "included": ["documents", "metadatas", "distances"]
+}
+
+Each outer list is for each query (1 in our case), and each inner list holds the top-k results.
 ```
 
 ---
 
-### Return structure
+### Return structure ☑️
 
-*Sketch out what one item in your return list looks like as a concrete example. Where does each field come from in the query results?*
+_Sketch out what one item in your return list looks like as a concrete example. Where does each field come from in the query results?_
 
 ```
-[your answer here]
+The return list contains dictionaries, each of which follows this structure:
+[
+    {
+        "text": "Each player is dealt seven cards to start the game.",  # from documents[0][i]
+        "game": "Uno",                                                  # from metadatas[0][i]["game"]
+        "distance": 0.1834,                                             # from distances[0][i]
+    },
+    ...
+]
 ```
 
 ---
 
-### Handling the nested result structure
+### Handling the nested result structure ☑️
 
-*`_collection.query()` returns nested lists. Describe what index you need to access to get the actual list of results for a single query, and why the nesting exists.*
+_`_collection.query()` returns nested lists. Describe what index you need to access to get the actual list of results for a single query, and why the nesting exists._
 
 ```
-[your answer here]
+The nested structure exists to handle multiple queries (e.g. query_texts=["text1", "text2", ...]). Because we will only be passing one query at a time, we will always index the outer list of the query's result with 0 to access the inner list of top-k results for the documents, metadatas, and distances fields.
 ```
 
 ---
 
 ### Relevance threshold
 
-*Will you filter out results above a certain distance score, or return all `n_results` regardless of how relevant they are? What are the tradeoffs of each approach?*
+_Will you filter out results above a certain distance score, or return all `n_results` regardless of how relevant they are? What are the tradeoffs of each approach?_
 
 ```
-[your answer here]
+Filtering out results above a certain distance helps the final answers be relevant as well as reduce hallucinations by shielding the LLM from irrelevant sources. However, sometimes the distance scoring may be too high despite actual relevance, causing edge cases were certain relevant answers never get returned. Another issue is that hardcoding a threshold value is unreliable if the embedding model and/or corpora change. On the flip side, returning all n_results regardless of distance solves the false negative shortcoming by always including the sources even with erroneous distance scores. However, now the problem is that the LLM may struggle to reconcile irrelevant sources with its system prompt of choosing the "best" one. In this case, the system prompt should be modified to allow the LLM a "way out," stating that no relevant answers could be found. This in itself presents a new challenge: making sure that the LLM does not use that escape too often, which would render RulesBot useles.
+
+In light of these advantages and disadvantages, I will opt for a "hybrid" solution: setting a high (restrictive) distance threshold to allow almost all results through except those that are almost certainly irrelevant. I performed some testing via peek_query_results.py to decide the threshold value.
 ```
 
 ---
 
 ### Edge cases
 
-*How does your implementation behave when: (a) the collection is empty, (b) the query matches no chunks well, (c) the query matches chunks from multiple games?*
+_How does your implementation behave when: (a) the collection is empty, (b) the query matches no chunks well, (c) the query matches chunks from multiple games?_
 
 ```
 [your answer here]
@@ -92,7 +139,7 @@ Results should be ordered from most to least relevant (lowest to highest distanc
 
 ## Implementation Notes
 
-*Fill this in after implementing, before moving to Milestone 3.*
+_Fill this in after implementing, before moving to Milestone 3._
 
 **Test query and top result returned:**
 

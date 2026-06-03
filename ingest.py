@@ -11,11 +11,13 @@ def load_documents():
             with open(filepath, "r", encoding="utf-8") as f:
                 text = f.read()
             game_name = filename.replace(".txt", "").replace("_", " ").title()
-            documents.append({
-                "game": game_name,
-                "filename": filename,
-                "text": text,
-            })
+            documents.append(
+                {
+                    "game": game_name,
+                    "filename": filename,
+                    "text": text,
+                }
+            )
     print(f"Loaded {len(documents)} rule document(s): {[d['game'] for d in documents]}")
     return documents
 
@@ -56,11 +58,13 @@ def chunk_document(text, game_name):
         chunk_text = text[start:end].strip()
 
         if len(chunk_text) >= min_length:
-            chunks.append({
-                "text": chunk_text,
-                "game": game_name,
-                "chunk_id": f"{prefix}_{counter}",
-            })
+            chunks.append(
+                {
+                    "text": chunk_text,
+                    "game": game_name,
+                    "chunk_id": f"{prefix}_{counter}",
+                }
+            )
             counter += 1
 
         # Advance by (chunk_size - overlap) so the next chunk shares

@@ -1,0 +1,25 @@
+149 chunks in collection.
+
+[relevant ] 0.446  0.469  0.524     How many resource cards do I start with in Catan?
+[relevant ] 0.456  0.580  0.588     When can I build a settlement?
+[relevant ] 0.376  0.386  0.463     How do I make an accusation in Clue?
+[relevant ] 0.289  0.330  0.351     How does the spymaster give clues in Codenames?
+[relevant ] 0.415  0.452  0.522     What happens when I land on Go in Monopoly?
+[relevant ] 0.469  0.475  0.514     How do you build hotels in Monopoly?
+[relevant ] 0.428  0.450  0.451     How does an outbreak spread in Pandemic?
+[relevant ] 0.382  0.396  0.573     How do I attack a territory in Risk?
+[relevant ] 0.392  0.491  0.527     How do I claim a route in Ticket to Ride?
+[relevant ] 0.298  0.356  0.454     What does a wild card do in Uno?
+[off-topic] 0.836  0.870  0.872     What is the weather forecast for tomorrow?
+[off-topic] 0.644  0.774  0.844     How do I file my income taxes?
+[off-topic] 0.807  0.815  0.816     What is the capital of France?
+
+── Summary ──
+Relevant queries       avg best: 0.395 | avg mid: 0.438 | avg worst: 0.497
+Off-topic queries      avg best: 0.762 | avg mid: 0.820 | avg worst: 0.844
+Overall                avg best: 0.480 | avg mid: 0.526 | avg worst: 0.577
+
+── Threshold band ──
+Worst relevant top-3 distance : 0.588
+Best off-topic distance       : 0.644
+Clean gap — pick a threshold between 0.588 and 0.644.

@@ -15,19 +15,19 @@ Split a single rule book document into smaller chunks suitable for embedding and
 
 **Inputs:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `text` | `str` | The full text of a rule book document |
+| Parameter   | Type  | Description                                                     |
+| ----------- | ----- | --------------------------------------------------------------- |
+| `text`      | `str` | The full text of a rule book document                           |
 | `game_name` | `str` | The name of the game this document belongs to (e.g., `"Catan"`) |
 
 **Output:** `list[dict]`
 
 Each dict in the returned list contains exactly these keys:
 
-| Key | Type | Description |
-|-----|------|-------------|
-| `"text"` | `str` | The chunk text |
-| `"game"` | `str` | The game name (passed through from `game_name`) |
+| Key          | Type  | Description                                                         |
+| ------------ | ----- | ------------------------------------------------------------------- |
+| `"text"`     | `str` | The chunk text                                                      |
+| `"game"`     | `str` | The game name (passed through from `game_name`)                     |
 | `"chunk_id"` | `str` | A unique identifier for this chunk (e.g., `"catan_0"`, `"catan_1"`) |
 
 Returns an empty list `[]` if the input text is empty or produces no valid chunks.
@@ -109,18 +109,18 @@ handle these cases better, at the cost of more implementation complexity.
 
 ---
 
-## Implementation Notes
+## Implementation Notes ☑️
 
-*Fill this in after running the app and confirming ingestion worked.*
+_Fill this in after running the app and confirming ingestion worked._
 
 **Actual chunk count produced across all 8 rule books:**
 
 ```
-[your answer here]
+149 chunks
 ```
 
 **One thing that surprised you or didn't match your expectations:**
 
 ```
-[your answer here]
+At first I was surprised by how low the number of chunks was, but I quickly came to my senses and realized that even though the DB is injesting 8 rulebooks, each one is fairly small. Thus, 149 seems reasonable now.
 ```
