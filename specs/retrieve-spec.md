@@ -115,24 +115,31 @@ The nested structure exists to handle multiple queries (e.g. query_texts=["text1
 
 ---
 
-### Relevance threshold
+### Relevance threshold ☑️
 
 _Will you filter out results above a certain distance score, or return all `n_results` regardless of how relevant they are? What are the tradeoffs of each approach?_
 
 ```
-Filtering out results above a certain distance helps the final answers be relevant as well as reduce hallucinations by shielding the LLM from irrelevant sources. However, sometimes the distance scoring may be too high despite actual relevance, causing edge cases were certain relevant answers never get returned. Another issue is that hardcoding a threshold value is unreliable if the embedding model and/or corpora change. On the flip side, returning all n_results regardless of distance solves the false negative shortcoming by always including the sources even with erroneous distance scores. However, now the problem is that the LLM may struggle to reconcile irrelevant sources with its system prompt of choosing the "best" one. In this case, the system prompt should be modified to allow the LLM a "way out," stating that no relevant answers could be found. This in itself presents a new challenge: making sure that the LLM does not use that escape too often, which would render RulesBot useles.
+Filtering out results above a certain distance helps the final answers be relevant as well as reduce hallucinations by shielding the LLM from irrelevant sources. However, sometimes the distance scoring may be too high despite actual relevance, causing edge cases where certain relevant answers never get returned. Another issue is that hardcoding a threshold value is unreliable if the embedding model and/or corpora change. On the flip side, returning all n_results regardless of distance solves the false negative shortcoming by always including the sources even with erroneous distance scores. However, now the problem is that the LLM may struggle to reconcile irrelevant sources with its system prompt of choosing the "best" one. In this case, the system prompt should be modified to allow the LLM a "way out," stating that no relevant answers could be found. This in itself presents a new challenge: making sure that the LLM does not use that escape too often, which would render RulesBot useless.
 
-In light of these advantages and disadvantages, I will opt for a "hybrid" solution: setting a high (restrictive) distance threshold to allow almost all results through except those that are almost certainly irrelevant. I performed some testing via peek_query_results.py to decide the threshold value.
+In light of these advantages and disadvantages, I will opt for a "hybrid" solution: setting a high (permissive) distance threshold to allow almost all results through except those that are almost certainly irrelevant. I performed some testing via peek_query_results.py to decide the threshold value. The results (given in query_results.txt) indicate a narrow band between the worst relevant-query result of 0.588 and the best off-topic-query result of 0.609 (tested with tricky adversarial cases too). Thus, a reasonable and round threshold value is 0.60. Because the band gap is thin, this threshold value should be paired with the LLM's escape hatch of "no relevant answers found" just in case there are any false positives.
+
+Things to note:
+
+* The threshold's false negatives (eliminating high-distance relevant answers) never pass to the LLM, preventing it from answering a question that could have been answered.
+* The experiment script used a small sample set (~20). Real user queries may be even trickier due to higher vagueness, filler words, typos, etc., causing the real threshold to drift and rendering this hardcoded one stale.
 ```
 
 ---
 
-### Edge cases
+### Edge cases ☑️
 
 _How does your implementation behave when: (a) the collection is empty, (b) the query matches no chunks well, (c) the query matches chunks from multiple games?_
 
 ```
-[your answer here]
+(a) The given code already handles an empty collection by returning an empty list.
+(b) If all the chunks fall below the hardcoded threshold, the LLM's escape hatch should hopefully catch them all as irrelevant. If they are filtered out by the threshold, then the LLM gets no chunks to retrieve from and should certainly indicate that no relevant chunks were found.
+(c) When the query matches chunks from multiple games, the current retriever still passes all k results to the LLM because the current algorithm doesn't group by the game. However, for user queries that explicitly name a game, we can scope the query using where={"game": ...} to only get game-relevant chunks. One thing to note here is that the metadata matching requires an exact match, so abbreviations, typos, and different capitalizations of game names may get missed in user queries. An advanced fix is to use an LLM to get the game name, but that is beyond the scope of this lab!
 ```
 
 ---

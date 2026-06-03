@@ -94,13 +94,13 @@ python app.py
 
 ## Rule Books Included
 
-| Game           | File                      |
-| -------------- | ------------------------- |
-| Catan          | `docs/catan.txt`          |
-| Clue           | `docs/clue.txt`           |
-| Codenames      | `docs/codenames.txt`      |
-| Monopoly       | `docs/monopoly.txt`       |
-| Pandemic       | `docs/pandemic.txt`       |
-| Risk           | `docs/risk.txt`           |
+| Game | File |
+|------|------|
+| Catan | `docs/catan.txt` |
+| Clue | `docs/clue.txt` |
+| Codenames | `docs/codenames.txt` |
+| Monopoly | `docs/monopoly.txt` |
+| Pandemic | `docs/pandemic.txt` |
+| Risk | `docs/risk.txt` |
 | Ticket to Ride | `docs/ticket_to_ride.txt` |
-| Uno            | `docs/uno.txt`            |
+| Uno | `docs/uno.txt` |

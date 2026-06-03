@@ -1,3 +1,4 @@
+
 149 chunks in collection.
 
 [relevant ] 0.446  0.469  0.524     How many resource cards do I start with in Catan?
@@ -13,13 +14,19 @@
 [off-topic] 0.836  0.870  0.872     What is the weather forecast for tomorrow?
 [off-topic] 0.644  0.774  0.844     How do I file my income taxes?
 [off-topic] 0.807  0.815  0.816     What is the capital of France?
+[off-topic] 0.816  0.826  0.829     What's a good recipe for chocolate chip cookies?
+[off-topic] 0.854  0.887  0.889     How do I reset my email password?
+[off-topic] 0.640  0.709  0.744     How do credit cards calculate interest?
+[off-topic] 0.609  0.622  0.624     What casino dice games have the best odds?
+[off-topic] 0.632  0.717  0.730     How do I win an argument with my boss?
+[off-topic] 0.733  0.764  0.766     How much money should I keep in my savings account?
 
 ── Summary ──
 Relevant queries       avg best: 0.395 | avg mid: 0.438 | avg worst: 0.497
-Off-topic queries      avg best: 0.762 | avg mid: 0.820 | avg worst: 0.844
-Overall                avg best: 0.480 | avg mid: 0.526 | avg worst: 0.577
+Off-topic queries      avg best: 0.730 | avg mid: 0.776 | avg worst: 0.790
+Overall                avg best: 0.554 | avg mid: 0.598 | avg worst: 0.636
 
 ── Threshold band ──
 Worst relevant top-3 distance : 0.588
-Best off-topic distance       : 0.644
-Clean gap — pick a threshold between 0.588 and 0.644.
+Best off-topic distance       : 0.609
+Clean gap — pick a threshold between 0.588 and 0.609.
