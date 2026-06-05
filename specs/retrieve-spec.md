@@ -151,14 +151,18 @@ _Fill this in after implementing, before moving to Milestone 3._
 **Test query and top result returned:**
 
 ```
-Query: [your test query]
-Top result game: [game name]
-Distance score: [score]
-Does it make sense? [yes / no / explain]
+Query: When can I change the color of the card?
+Top result game: Uno
+Distance score: 0.430
+Top result:
+hange the current color to any color you choose, including the current color. Can be played at any time regardless of the current card. The player who plays the Wild card declares the new color.\n\nWild Draw Four: Change the current color and force the next player to draw 4 cards and lose their turn.
+
+Does it make sense?
+Yes. While there is extra information, the key sentence ("The player who plays the Wild card declares the new color.") is there in the top-most result. Without having to mention Uno or wild cards, the retriever successfully returned the most useful answer.
 ```
 
 **One thing about the query results that surprised you:**
 
 ```
-[your answer here]
+Despite running on a local embedding model and database, I was surprised at the query results mostly being able to distinguish off-topic queries from relevant queries, even if those off-topic queries were adversarial (designed to use words from the games to make them sound relevant). Granted, the distance gap between the adversarial and the relevant queries was small, but the fact that it existed for a local model surprised me.
 ```

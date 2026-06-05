@@ -1,5 +1,9 @@
 # 🎲 RulesBot
 
+Notes:
+
+- Retriever - game keyword-matching
+
 > A board game rules assistant — because "just read the rulebook" isn't always helpful at 11pm on game night.
 
 RulesBot answers natural language questions about board game rules using a RAG (Retrieval-Augmented Generation) pipeline. Ask it anything: it retrieves relevant rule passages and generates an answer grounded in the actual text.
