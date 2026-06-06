@@ -8,6 +8,22 @@ Built as **Lab 1 of CodePath AI201**. The Gradio UI and infrastructure were prov
 
 ---
 
+## Demo
+
+Normal query - mentions the game name clearly and asks a question directly addressed by the rulebook corpus:
+
+![Normal query and response screenshot](./assets/normal.png)
+
+Off-topic query - asks an irrelevant question whose answer is not in the rulebook corpus:
+
+![Off-topic query and response screenshot](./assets/off-topic.png)
+
+Game-agnostic query - does not name a game and asks about rules common to multiple games:
+
+![Game-agnostic query and response screenshot](./assets/game-agnostic.png)
+
+---
+
 ## How It Works
 
 ```
@@ -34,7 +50,7 @@ docs/*.txt  →  chunk  →  embed + store  →  retrieve  →  generate  →  a
 ## Known Limitations
 
 - The relevance threshold is hardcoded and tied to the current embedding model — it would need re-tuning if the model or corpus changes. (A reranker would be the production fix.)
-- Multi-game detection only surfaces ambiguity that appears in the *retrieved* chunks. A query ambiguous to a human but dominated by one game in embedding space (e.g. "How do I draw cards?" → all Uno) won't trigger clarification.
+- Multi-game detection only surfaces ambiguity that appears in the _retrieved_ chunks. A query ambiguous to a human but dominated by one game in embedding space (e.g. "How do I draw cards?" → all Uno) won't trigger clarification.
 - Game-name detection is keyword-based, so typos, abbreviations, or alternate capitalizations of game names may be missed.
 
 ---
@@ -68,7 +84,7 @@ Open `.env` and replace `your_key_here` with your key from [console.groq.com](ht
 ### 4. Run the app
 
 ```bash
-python app.py
+python app.py       # or `python3 app.py`
 ```
 
 RulesBot starts and opens in your browser.
